@@ -155,3 +155,5 @@ Judges can launch the platform instantly with zero configuration:
 - **No Hallucinated Eligibility**: Mandatory restrictions (course discipline, study year, location) are evaluated deterministically in TypeScript and PostgreSQL before scoring.
 - **API Key Safety**: AI credentials remain in client-side memory or local configuration; keys are never bundled or logged.
 - **Sandboxed Execution**: Challenge evaluators run safely on validated inputs and structured syntax without exposing privileged execution vectors.
+#   o o s  
+ 
