@@ -156,4 +156,5 @@ Judges can launch the platform instantly with zero configuration:
 - **API Key Safety**: AI credentials remain in client-side memory or local configuration; keys are never bundled or logged.
 - **Sandboxed Execution**: Challenge evaluators run safely on validated inputs and structured syntax without exposing privileged execution vectors.
 #   o o s  
+ #   O O S  
  
