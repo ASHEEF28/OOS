@@ -1,0 +1,12 @@
+{
+  "name": "ai-operations",
+  "version": "1.0.0",
+  "description": "Supabase Edge Function for AI operations",
+  "main": "index.ts",
+  "dependencies": {
+    "@supabase/supabase-js": "^2"
+  },
+  "devDependencies": {
+    "@types/node": "^18"
+  }
+}
