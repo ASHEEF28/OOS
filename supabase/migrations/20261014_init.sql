@@ -187,52 +187,65 @@ ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.learning_milestones ENABLE ROW LEVEL SECURITY;
 
 -- 1. Profiles Policies
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles
     FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile" ON public.profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
     FOR UPDATE USING (auth.uid() = id);
 
 -- 2. Skills Master Policies (Public Read)
+DROP POLICY IF EXISTS "Public read skills" ON public.skills;
 CREATE POLICY "Public read skills" ON public.skills
     FOR SELECT TO PUBLIC USING (true);
 
 -- 3. Profile Skills Policies
+DROP POLICY IF EXISTS "Users manage own skills" ON public.profile_skills;
 CREATE POLICY "Users manage own skills" ON public.profile_skills
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 4. Projects Policies
+DROP POLICY IF EXISTS "Users manage own projects" ON public.projects;
 CREATE POLICY "Users manage own projects" ON public.projects
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 5. Opportunities Policies (Public Read for Active Opportunities)
+DROP POLICY IF EXISTS "Public read active opportunities" ON public.opportunities;
 CREATE POLICY "Public read active opportunities" ON public.opportunities
     FOR SELECT TO PUBLIC USING (is_active = true);
 
 -- 6. Challenges Policies (Public Read for Active Challenges)
+DROP POLICY IF EXISTS "Public read challenges" ON public.skill_challenges;
 CREATE POLICY "Public read challenges" ON public.skill_challenges
     FOR SELECT TO PUBLIC USING (is_active = true);
 
 -- 7. Challenge Submissions Policies
+DROP POLICY IF EXISTS "Users view and create own submissions" ON public.challenge_submissions;
 CREATE POLICY "Users view and create own submissions" ON public.challenge_submissions
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 8. Skill Evidence Policies
+DROP POLICY IF EXISTS "Users view own evidence" ON public.skill_evidence;
 CREATE POLICY "Users view own evidence" ON public.skill_evidence
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 9. Opportunity Saves Policies
+DROP POLICY IF EXISTS "Users manage own saves" ON public.opportunity_saves;
 CREATE POLICY "Users manage own saves" ON public.opportunity_saves
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 10. Applications Tracker Policies
+DROP POLICY IF EXISTS "Users manage own applications" ON public.applications;
 CREATE POLICY "Users manage own applications" ON public.applications
     FOR ALL USING (auth.uid() = profile_id);
 
 -- 11. Learning Milestones Policies
+DROP POLICY IF EXISTS "Users manage own milestones" ON public.learning_milestones;
 CREATE POLICY "Users manage own milestones" ON public.learning_milestones
     FOR ALL USING (auth.uid() = profile_id);
 
