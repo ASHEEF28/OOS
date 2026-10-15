@@ -8,15 +8,43 @@ import {
   Sparkles, 
   AlertTriangle,
   Server,
-  Lock
+  Lock,
+  Database
 } from 'lucide-react';
 import { getStoredAiConfig, saveStoredAiConfig, resetDemoData, AiConfig } from '../lib/storage';
+import { 
+  getSupabaseUrl, 
+  getSupabaseAnonKey, 
+  saveSupabaseCredentials, 
+  testSupabaseConnection 
+} from '../lib/supabase';
 
 export const SettingsPage: React.FC = () => {
   const [aiConfig, setAiConfig] = useState<AiConfig>(getStoredAiConfig());
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Supabase state
+  const [supabaseUrl, setSupabaseUrl] = useState(getSupabaseUrl());
+  const [supabaseAnonKey, setSupabaseAnonKey] = useState(getSupabaseAnonKey());
+  const [supabaseStatus, setSupabaseStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [isTestingSupabase, setIsTestingSupabase] = useState(false);
+
+  const handleSaveSupabase = () => {
+    saveSupabaseCredentials(supabaseUrl, supabaseAnonKey);
+    setSupabaseStatus({ success: true, message: 'Supabase credentials saved successfully!' });
+    setTimeout(() => setSupabaseStatus(null), 3000);
+  };
+
+  const handleTestSupabase = async () => {
+    setIsTestingSupabase(true);
+    setSupabaseStatus(null);
+    saveSupabaseCredentials(supabaseUrl, supabaseAnonKey);
+    const res = await testSupabaseConnection();
+    setSupabaseStatus(res);
+    setIsTestingSupabase(false);
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,6 +253,80 @@ export const SettingsPage: React.FC = () => {
             </button>
           </div>
         </form>
+
+        {/* Supabase Database & Auth Configuration */}
+        <div className="bg-midnight-surface p-6 rounded-2xl border border-midnight-border space-y-5 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-midnight-border">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-emerald-400" />
+              <h3 className="font-bold text-sm text-white">Supabase Cloud Database & Auth</h3>
+            </div>
+            <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
+              gwemjmpsbqqybkrgxceg
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Project Endpoint URL</label>
+              <input
+                type="text"
+                value={supabaseUrl}
+                onChange={e => setSupabaseUrl(e.target.value)}
+                placeholder="https://gwemjmpsbqqybkrgxceg.supabase.co"
+                className="w-full bg-midnight-bg border border-midnight-border text-xs px-3 py-2 rounded-xl text-slate-100 font-mono focus:outline-none focus:border-cyan-400"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Supabase Anon Key (Public API Key)</label>
+              <input
+                type="password"
+                value={supabaseAnonKey}
+                onChange={e => setSupabaseAnonKey(e.target.value)}
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                className="w-full bg-midnight-bg border border-midnight-border text-xs px-3 py-2 rounded-xl text-slate-100 font-mono focus:outline-none focus:border-cyan-400"
+              />
+            </div>
+          </div>
+
+          {supabaseStatus && (
+            <div className={`p-3 rounded-xl border text-xs font-mono ${
+              supabaseStatus.success
+                ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
+                : 'bg-rose-950/30 border-rose-500/40 text-rose-300'
+            }`}>
+              {supabaseStatus.message}
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleSaveSupabase}
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-midnight-bg font-bold text-xs transition-colors flex items-center gap-1.5"
+            >
+              <Check className="w-3.5 h-3.5" /> Save Supabase Keys
+            </button>
+
+            <button
+              type="button"
+              onClick={handleTestSupabase}
+              disabled={isTestingSupabase}
+              className="px-4 py-2 rounded-xl bg-midnight-bg hover:bg-midnight-hover border border-midnight-border text-xs text-slate-200 font-semibold transition-colors flex items-center gap-1.5"
+            >
+              <Server className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{isTestingSupabase ? 'Verifying...' : 'Test Supabase Connection'}</span>
+            </button>
+          </div>
+
+          <div className="p-3 bg-midnight-bg rounded-xl border border-midnight-border/80 text-[11px] text-slate-400 space-y-1">
+            <span className="font-semibold text-slate-300 block">Database Migration Tip:</span>
+            <p>
+              Your project database schema with Row Level Security is stored in <code className="text-cyan-accent">supabase/migrations/20261014_init.sql</code>. Copy and run it in the Supabase Dashboard SQL Editor to initialize all tables and policies.
+            </p>
+          </div>
+        </div>
 
         {/* Demo Mode Reset Section */}
         <div className="bg-midnight-surface p-6 rounded-2xl border border-midnight-border space-y-4 shadow-xl">
